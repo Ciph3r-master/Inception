@@ -2,6 +2,18 @@
 
 set -e
 
+get_secret()
+{
+    local secret_name=$1
+    local path="/run/secrets/$secret_name"
+    if [ -f "$path" ]; then
+        cat "$path"
+    else
+        echo "Error: Secret '$secret_name' not found at '$path'" >&2
+        exit 1
+    fi 
+}
+
 #Retirer la boucle infinie
 while ! mariadb-admin ping -h"mariadb" --silent; do
     echo "Waiting MariaDB..."
@@ -14,25 +26,36 @@ if [ ! -f "wp-config.php" ]; then
 
     wp core download --allow-root
 
+    DB_PASSWORD=$(get_secret "mariadb_wp_user_password")
+
+
     wp config create --allow-root \
-        --dbname=wordpress_db \
-        --dbuser=wp_user \
-        --dbpass=password \
+        --dbname="${MARIADB_WORDPRESS_DB}" \
+        --dbuser="${MARIADB_WP_USER}" \
+        --dbpass="${DB_PASSWORD}" \
         --dbhost=mariadb
 
+    ADMIN_NAME=$(get_secret "wp_admin_name")
+    ADMIN_PASSWORD=$(get_secret "wp_admin_password")
+    ADMIN_MAIL=$(get_secret "wp_admin_mail")
+
     wp core install --allow-root \
-        --url=localhost \
-        --title="Big website" \
-        --admin_user="admin" \
-        --admin_password="admin" \
-        --admin_email="admin@test.fr"
+        --url="${DOMAIN_NAME}" \
+        --title="${WORDPRESS_TITLE}" \
+        --admin_user="${ADMIN_NAME}" \
+        --admin_password="${ADMIN_PASSWORD}" \
+        --admin_email="${ADMIN_MAIL}"
+
+    USER_NAME=$(get_secret "wp_user_name")
+    USER_PASSWORD=$(get_secret "wp_user_password")
+    USER_MAIL=$(get_secret "wp_user_mail")
 
     wp user create --allow-root \
-        "bernard" "user@test.fr" \
+        "${USER_NAME}" "${USER_MAIL}" \
         --role=author \
-        --user_pass="password"
+        --user_pass="${USER_PASSWORD}"
 
-	wp theme install prespa-saas --activate --allow-root 
+	wp theme install "${WORDPRESS_THEME}" --activate --allow-root 
 
     echo "WordPress is ready !"
 else
