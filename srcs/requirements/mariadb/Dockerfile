@@ -11,13 +11,14 @@ RUN	chown -R mysql:mysql /var/lib/mysql
 RUN mkdir -p /run/mysqld \
     && chown mysql:mysql /run/mysqld
 
-COPY --chown=mysql:mysql ./sql/init.sql /etc/mysql/init.sql
 COPY --chown=mysql:mysql ./conf/50-server.cnf /etc/mysql/mariadb.conf.d/50-server.cnf
-
 RUN chmod 644 /etc/mysql/mariadb.conf.d/50-server.cnf
+
+COPY ./sql/setup.sh /usr/local/bin/setup.sh
+RUN chmod +x /usr/local/bin/setup.sh
 
 EXPOSE 3306
 
 USER mysql
 
-CMD ["mysqld", "--init-file=/etc/mysql/init.sql"]
+ENTRYPOINT ["/usr/local/bin/setup.sh"]
