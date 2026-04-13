@@ -7,6 +7,11 @@ services:
       - db_data:/var/lib/mysql
     secrets:
       - mariadb_wp_user_password
+    healthcheck:
+      test: ["CMD", "mariadb-admin", "ping", "-h", "localhost", "--silent"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
   wordpress:
     build: ./requirements/wordpress/
     secrets:
@@ -20,16 +25,28 @@ services:
     container_name: wordpress
     env_file: .env
     depends_on:
-      - mariadb
+      mariadb:
+        condition: service_healthy
     volumes:
       - wp_data:/var/www/html
+    healthcheck:
+      test: ["CMD", "cgi-fcgi", "-bind", "-connect", "localhost:9000"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
     ports:
         - "9000:9000"
   nginx:
     build: ./requirements/nginx/
     container_name: nginx
     depends_on:
-      - wordpress
+      wordpress:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "curl", "https://localhost:443", "-k"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
     volumes:
       - wp_data:/var/www/html
     ports:
@@ -40,16 +57,16 @@ volumes:
 
 secrets:
   wp_admin_name:
-    file: ../secrets/wp_admin_name.txt
+    file: ../secrets/wordpress/wp_admin_name.txt
   wp_admin_password:
-    file: ../secrets/wp_admin_password.txt
+    file: ../secrets/wordpress/wp_admin_password.txt
   wp_admin_mail:
-    file: ../secrets/wp_admin_mail.txt
+    file: ../secrets/wordpress/wp_admin_mail.txt
   wp_user_name:
-    file: ../secrets/wp_user_name.txt
+    file: ../secrets/wordpress/wp_user_name.txt
   wp_user_password:
-    file: ../secrets/wp_user_password.txt
+    file: ../secrets/wordpress/wp_user_password.txt
   wp_user_mail:
-    file: ../secrets/wp_user_mail.txt
+    file: ../secrets/wordpress/wp_user_mail.txt
   mariadb_wp_user_password:
-    file: ../secrets/mariadb_wp_user_password.txt
+    file: ../secrets/mariadb/mariadb_wp_user_password.txt
