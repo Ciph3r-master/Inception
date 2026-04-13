@@ -12,6 +12,7 @@ RUN apt-get update && \
 						curl \
 						less \
 						iputils-ping \
+						libfcgi-bin  \
 						mariadb-client && \
 	apt-get clean
 
