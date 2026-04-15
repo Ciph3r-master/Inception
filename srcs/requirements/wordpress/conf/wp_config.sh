@@ -14,12 +14,6 @@ get_secret()
     fi 
 }
 
-#Retirer la boucle infinie
-while ! mariadb-admin ping -h"mariadb" --silent; do
-    echo "Waiting MariaDB..."
-    sleep 2
-done
-
 if [ ! -f "wp-config.php" ]; then
 
     echo "WordPress installation in progress..."
