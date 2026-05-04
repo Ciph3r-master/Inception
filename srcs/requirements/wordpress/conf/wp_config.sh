@@ -53,6 +53,9 @@ if [ ! -f "wp-config.php" ]; then
 
     echo "WordPress is ready !"
 else
+    echo "Updating domain name to ${DOMAIN_NAME}..."
+    wp option update home "https://${DOMAIN_NAME}" --allow-root
+    wp option update siteurl "https://${DOMAIN_NAME}" --allow-root
     echo "WordPress is already installed."
 fi
 
