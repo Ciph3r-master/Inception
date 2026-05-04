@@ -3,18 +3,17 @@ FROM debian:bookworm
 RUN apt-get update && \
 	apt-get install -y  nginx   \
                         openssl \
+                        gettext-base \
                         curl && \
 	apt-get clean
 
 EXPOSE 443
 
-COPY ./conf/nginx.conf /etc/nginx/conf.d/nginx.conf
+COPY ./conf/nginx.conf.template /etc/nginx/conf.d/nginx.conf.template
 
 RUN mkdir -p /etc/nginx/ssl
 
-RUN openssl req -x509 -nodes -days 365 -newkey rsa:2048 \
-    -keyout /etc/nginx/ssl/ssl.key \
-    -out /etc/nginx/ssl/ssl.crt \
-    -subj "/C=FR/ST=Auvergne-Rhone-Alpes/L=Lyon/O=42/OU=42/CN=qutruche.42.fr/UID=qutruche"
+COPY ./entrypoint.sh /usr/local/bin/entrypoint.sh
+RUN chmod +x /usr/local/bin/entrypoint.sh
 
-CMD [ "nginx", "-g", "daemon off;" ]
+ENTRYPOINT [ "/usr/local/bin/entrypoint.sh" ]
