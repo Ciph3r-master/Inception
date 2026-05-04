@@ -5,6 +5,8 @@ services:
     env_file: .env
     volumes:
       - db_data:/var/lib/mysql
+    networks:
+      - inception
     secrets:
       - mariadb_wp_user_password
     healthcheck:
@@ -29,6 +31,8 @@ services:
         condition: service_healthy
     volumes:
       - wp_data:/var/www/html
+    networks:
+      - inception
     healthcheck:
       test: ["CMD", "cgi-fcgi", "-bind", "-connect", "localhost:9000"]
       interval: 10s
@@ -39,6 +43,7 @@ services:
   nginx:
     build: ./requirements/nginx/
     container_name: nginx
+    env_file: .env
     depends_on:
       wordpress:
         condition: service_healthy
@@ -49,12 +54,28 @@ services:
       retries: 5
     volumes:
       - wp_data:/var/www/html
+    networks:
+      - inception
     ports:
       - "443:443"
 volumes:
   db_data:
+    driver: local
+    driver_opts:
+      type: none
+      o: bind
+      device: /home/billcipher/data/mariadb
   wp_data:
+    driver: local
+    driver_opts:
+      type: none
+      o: bind
+      device: /home/billcipher/data/wordpress
 
+networks:
+  inception:
+    driver: bridge
+  
 secrets:
   wp_admin_name:
     file: ../secrets/wordpress/wp_admin_name.txt
