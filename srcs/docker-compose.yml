@@ -2,6 +2,7 @@ services:
   mariadb:
     build: ./requirements/mariadb/
     container_name: mariadb
+    restart: unless-stopped
     env_file: .env
     volumes:
       - db_data:/var/lib/mysql
@@ -16,6 +17,9 @@ services:
       retries: 5
   wordpress:
     build: ./requirements/wordpress/
+    container_name: wordpress
+    restart: unless-stopped
+    env_file: .env
     secrets:
       - wp_admin_name
       - wp_admin_password
@@ -24,8 +28,6 @@ services:
       - wp_user_password
       - wp_user_mail
       - mariadb_wp_user_password
-    container_name: wordpress
-    env_file: .env
     depends_on:
       mariadb:
         condition: service_healthy
@@ -43,6 +45,7 @@ services:
   nginx:
     build: ./requirements/nginx/
     container_name: nginx
+    restart: unless-stopped
     env_file: .env
     depends_on:
       wordpress:
@@ -64,13 +67,13 @@ volumes:
     driver_opts:
       type: none
       o: bind
-      device: /home/billcipher/data/mariadb
+      device: /home/qutruche/data/mariadb
   wp_data:
     driver: local
     driver_opts:
       type: none
       o: bind
-      device: /home/billcipher/data/wordpress
+      device: /home/qutruche/data/wordpress
 
 networks:
   inception:
