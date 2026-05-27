@@ -4,6 +4,10 @@ SRCS = srcs
 
 COMPOSE_FILE = $(SRCS)/docker-compose.yml
 
+HOME_VOLUME = /home/qutruche
+
+DATA_VOLUME = $(HOME_VOLUME)/data
+
 all:
 	docker compose -f $(COMPOSE_FILE) up -d --build
 
@@ -23,6 +27,11 @@ stop:
 
 fclean: stop
 	docker system prune -a -f
+	sudo rm -rf $(DATA_VOLUME)
+	sudo mkdir -p $(DATA_VOLUME)
+	sudo mkdir -p $(DATA_VOLUME)/wordpress
+	sudo mkdir -p $(DATA_VOLUME)/mariadb
+	sudo chown -R qutruche:qutruche $(HOME_VOLUME)
 
 re: fclean all
 

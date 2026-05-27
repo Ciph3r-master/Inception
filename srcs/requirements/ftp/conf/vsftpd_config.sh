@@ -32,19 +32,22 @@ secure_chroot_dir=/var/run/vsftpd/empty
 pasv_enable=YES
 pasv_min_port=40000
 pasv_max_port=40005
+
+background=NO
 EOF
 
 FTP_PASS=$(get_secret "ftp_password")
-echo $FTP_PASS
 
 if ! id "$FTP_USER" >/dev/null 2>&1; then
     echo "Creating FTP user $FTP_USER..."
-    useradd -m -s /bin/bash "$FTP_USER"
+    useradd -d "/home/$FTP_USER" -M -s /bin/bash "$FTP_USER"
     echo "$FTP_USER:$FTP_PASS" | chpasswd
 else
     echo "$FTP_USER already exists."
 fi
 
+chown $FTP_USER:www-data -R /home/$FTP_USER
+
 echo "FTP user '$FTP_USER' is ready !"
 
-exec vsftpd /etc/vsftpd.conf
+vsftpd /etc/vsftpd.conf || echo "VSFTPD crashed with err $?"

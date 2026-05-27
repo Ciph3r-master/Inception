@@ -31,6 +31,8 @@ services:
     depends_on:
       mariadb:
         condition: service_healthy
+      redis:
+        condition: service_healthy
     volumes:
       - wp_data:/var/www/html
     networks:
@@ -101,28 +103,42 @@ services:
     volumes:
       - wp_data:/home/${FTP_USER}/wordpress
     healthcheck:
-      test: ["CMD", "curl", "ftp://localhost:21", "-k"]
+      test: ["CMD", "nc", "-z", "localhost", "21"]
       interval: 10s
       timeout: 5s
       retries: 5
+      start_period: 10s
     networks:
       - inception
     ports:
       - "21:21"
       - "40000-40005:40000-40005"
+  redis:
+    build: ./requirements/redis
+    container_name: redis
+    restart: unless-stopped
+    env_file: .env
+    networks:
+      - inception
+    healthcheck:
+      test: ["CMD", "redis-cli", "PING"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 10s
 volumes:
   db_data:
     driver: local
     driver_opts:
       type: none
       o: bind
-      device: /home/billcipher/data/mariadb
+      device: /home/qutruche/data/mariadb
   wp_data:
     driver: local
     driver_opts:
       type: none
       o: bind
-      device: /home/billcipher/data/wordpress
+      device: /home/qutruche/data/wordpress
 
 networks:
   inception:

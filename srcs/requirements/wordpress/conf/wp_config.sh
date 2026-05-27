@@ -22,12 +22,15 @@ if [ ! -f "wp-config.php" ]; then
 
     DB_PASSWORD=$(get_secret "mariadb_wp_user_password")
 
-
     wp config create --allow-root \
         --dbname="${MARIADB_WORDPRESS_DB}" \
         --dbuser="${MARIADB_WP_USER}" \
         --dbpass="${DB_PASSWORD}" \
         --dbhost=mariadb
+
+	wp config set WP_CACHE true --raw --allow-root
+	wp config set WP_REDIS_HOST "redis" --allow-root
+	wp config set WP_REDIS_PORT 6379 --raw --allow-root
 
     ADMIN_NAME=$(get_secret "wp_admin_name")
     ADMIN_PASSWORD=$(get_secret "wp_admin_password")
@@ -50,7 +53,8 @@ if [ ! -f "wp-config.php" ]; then
         --user_pass="${USER_PASSWORD}"
 
 	#wp theme install "${WORDPRESS_THEME}" --activate --allow-root 
-
+	wp plugin install redis-cache --activate --allow-root
+	wp redis enable --allow-root
     echo "WordPress is ready !"
 else
     echo "Updating domain name to ${DOMAIN_NAME}..."
