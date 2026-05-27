@@ -15,8 +15,6 @@ get_secret()
 
 DB_PASSWORD=$(get_secret "mariadb_wp_user_password")
 
-echo DB_PASSWORD="$DB_PASSWORD"
-
 cat << EOF > /tmp/init.sql
 CREATE DATABASE IF NOT EXISTS \`${MARIADB_WORDPRESS_DB}\`;
 CREATE USER IF NOT EXISTS '${MARIADB_WP_USER}'@'%' IDENTIFIED BY '${DB_PASSWORD}';
