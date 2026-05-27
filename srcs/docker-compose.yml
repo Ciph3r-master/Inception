@@ -61,19 +61,68 @@ services:
       - inception
     ports:
       - "443:443"
+  adminer:
+    build: ./requirements/adminer/
+    container_name: adminer
+    restart: unless-stopped
+    env_file: .env
+    depends_on:
+      mariadb:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "curl", "http://localhost:8080", "-k"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - inception
+  static_website:
+    build: ./requirements/static_website/
+    container_name: static_website
+    restart: unless-stopped
+    env_file: .env
+    healthcheck:
+      test: ["CMD", "curl", "http://localhost:8000", "-k"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - inception
+  ftp:
+    build: ./requirements/ftp/
+    container_name: ftp
+    restart: unless-stopped
+    env_file: .env
+    secrets:
+      - ftp_password
+    depends_on:
+      wordpress:
+        condition: service_healthy
+    volumes:
+      - wp_data:/home/${FTP_USER}/wordpress
+    healthcheck:
+      test: ["CMD", "curl", "ftp://localhost:21", "-k"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - inception
+    ports:
+      - "21:21"
+      - "40000-40005:40000-40005"
 volumes:
   db_data:
     driver: local
     driver_opts:
       type: none
       o: bind
-      device: /home/qutruche/data/mariadb
+      device: /home/billcipher/data/mariadb
   wp_data:
     driver: local
     driver_opts:
       type: none
       o: bind
-      device: /home/qutruche/data/wordpress
+      device: /home/billcipher/data/wordpress
 
 networks:
   inception:
@@ -94,3 +143,5 @@ secrets:
     file: ../secrets/wordpress/wp_user_mail.txt
   mariadb_wp_user_password:
     file: ../secrets/mariadb/mariadb_wp_user_password.txt
+  ftp_password:
+    file: ../secrets/ftp/ftp_password.txt

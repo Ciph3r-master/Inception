@@ -49,7 +49,7 @@ if [ ! -f "wp-config.php" ]; then
         --role=author \
         --user_pass="${USER_PASSWORD}"
 
-	wp theme install "${WORDPRESS_THEME}" --activate --allow-root 
+	#wp theme install "${WORDPRESS_THEME}" --activate --allow-root 
 
     echo "WordPress is ready !"
 else

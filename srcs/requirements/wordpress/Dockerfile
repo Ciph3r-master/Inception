@@ -16,6 +16,7 @@ RUN apt-get update && \
 						mariadb-client && \
 	apt-get clean
 
+
 RUN mkdir -p /run/php && chown www-data:www-data /run/php
 
 COPY ./conf/www.conf /etc/php/8.2/fpm/pool.d/www.conf

@@ -46,21 +46,19 @@ Create a `.env` file in the `srcs/` directory. This file defines the metadata an
 
 	WORDPRESS_TITLE="Inception"
 
+
 	#####################
-	# WORDPRESS_THEME:  #
-	# Define your theme #
-	# Example:          #
-	#  - prespa-saas    #
-	#  - hello-biz      #
-	#  - variations     #
-	#  - saaslauncher   #
+	#    FTP SERVICE    #
 	#####################
 
-	WORDPRESS_THEME=prespa-saas
+	# FTP USER WHO ACCESS TO WORDPRESS FILES
+	FTP_USER=ftp_wordpress
+
 	```
 
 2.  **Secrets Directory:** Create a `./secrets/` directory (refer to the `srcs` structure). This folder must contain the following plain-text files:
     * `mariadb/mariadb_wp_user_password.txt`: Password for the MariaDB WordPress user.
+    * `ftp/ftp_password.txt`: Password for the ftp user.
     * `wordpress/wp_admin_mail.txt`: Mail for the WordPress admin user.
     * `wordpress/wp_admin_name.txt`: Username for the WordPress admin user.
     * `wordpress/wp_admin_password.txt`: Password for the WordPress admin user.
