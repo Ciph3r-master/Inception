@@ -126,6 +126,19 @@ services:
       timeout: 5s
       retries: 5
       start_period: 10s
+  monitoring:
+    build: ./requirements/monitoring
+    container_name: monitoring
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+      - /:/rootfs:ro
+      - /var/run:/var/run:ro
+      - /sys:/sys:ro
+      - /var/lib/docker/:/var/lib/docker:ro
+    restart: unless-stopped
+    privileged: true
+    networks:
+      - inception
 volumes:
   db_data:
     driver: local
