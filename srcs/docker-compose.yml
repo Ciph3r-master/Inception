@@ -42,8 +42,6 @@ services:
       interval: 10s
       timeout: 5s
       retries: 5
-    ports:
-        - "9000:9000"
   nginx:
     build: ./requirements/nginx/
     container_name: nginx

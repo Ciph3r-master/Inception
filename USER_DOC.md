@@ -45,8 +45,8 @@ Once the services are running, you can access the different parts of the applica
 
 Note that the project uses a self-signed certificate, so you may need to bypass the browser security warning.
 
-- **Main Website:** https://localhost
-- **Administration Panel:** https://localhost/wp-admin
+- **Main Website:** https://DOMAINNAME/ (Replace domain name by the .env var)
+- **Administration Panel:** https://DOMAINNAME/wp-admin
 
 ## 4. Credentials & Security
 For security reasons, sensitive information is never hardcoded into the application
@@ -57,14 +57,16 @@ All environment-specific variables are stored securely in the `.env` file or wit
 
 **Secret files (`./secrets/`):**
 
-- **WordPress Database:** User password
-- **WordPress Admin:**: Name, email and password
+- **WordPress Database:** Database user password
+- **WordPress Admin:** Name, email and password
 - **Default WordPress User:** Name, email and password
+- **WordPress FTP:** FTP password
 
 **Env file (`.env`):**
 
-- **WordPress:** Website Title, and WordPress theme
+- **WordPress:** Website Title
 - **MariaDB:** WordPress database name, and WordPress database user
+- **FTP:** FTP user name
 - **Other:** Domain name for redirections in wordpress and nginx
 
 
