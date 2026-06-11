@@ -18,7 +18,7 @@ help:
 	@echo "  stop                   Stop and remove the Docker containers / volumes";
 	@echo "  fclean                 Stop and remove the Docker containers / volumes, and prune the system";
 	@echo "  re                     fclean and make all";
-	@echo "  create_secrets_files   Create the secrets files for WordPress and MariaDB";
+	@echo "  create_secrets_files   Create the secrets files";
 	@echo "  logs                   Follow the logs of the Docker containers";
 	@echo "  ps                     List the running Docker containers";
 

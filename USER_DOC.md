@@ -5,8 +5,13 @@ This guide provides the necessary information to manage, access, and monitor the
 ## 1. Services Provided
 The stack is composed of several integrated services to ensure a complete functional environment:
 * **Web Application:** The main user-facing interface.
+* **Static Web Server:** A lightweight, high-performance server powered by **BusyBox httpd** to serve static assets and websites (HTML, CSS, JS) with minimal footprint.
 * **Administration Panel:** A back-office tool for managing data and configurations.
 * **Database:** A persistent storage system for all application data.
+* **FTP Server:** A secure file transfer server directly linked to the *Web Application* volume, allowing seamless file uploads and management.
+* **Redis Cache:** An in-memory data structure store used as a caching layer to boost performance and reduce database load.
+* **Adminer:** A lightweight, web-based database management tool to easily administer the Database via a browser.
+* **cAdvisor (Monitoring):** A real-time resource usage and performance monitoring tool that collects, aggregates, and exports metrics (CPU, memory, network, and disk usage) from the host machine and running containers.
 * **Reverse Proxy:** Handles routing, security, and SSL termination.
 
 ## 2. Managing the Project
@@ -39,6 +44,25 @@ make stop
 ```
 
 > **Warning:** The -v flag removes all volumes. Use it only if you want to reset your database and persistent data.
+
+### Deep clean the services
+
+If you need to completely wipe the environment (including Docker system cache and local persistent data directories), use the following Makefile target:
+
+```bash
+make fclean
+```
+
+> **Warning:** This will trigger a docker system prune -a -f, delete all local data volumes (including your dynamic application and database persistent storage), and recreate empty directories with the proper permissions.
+
+
+### Rebuild from Scratch
+
+To perform a complete wipe and immediately restart the entire stack fresh:
+
+```bash
+make re
+```
 
 ## 3. Accessing the Platform
 Once the services are running, you can access the different parts of the application via your browser.
