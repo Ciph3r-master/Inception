@@ -1,4 +1,4 @@
-.PHONY: all stop fclean re ps create_secrets_files help logs
+.PHONY: all stop fclean re ps create_secrets_files help logs remove_secrets
  
 SRCS = srcs
 
@@ -8,8 +8,7 @@ HOME_VOLUME = /home/qutruche
 
 DATA_VOLUME = $(HOME_VOLUME)/data
 
-all:
-	docker compose -f $(COMPOSE_FILE) up -d --build
+SECRETS = ./secrets
 
 help:
 	@echo "Usage: make [target]";
@@ -21,6 +20,9 @@ help:
 	@echo "  create_secrets_files   Create the secrets files";
 	@echo "  logs                   Follow the logs of the Docker containers";
 	@echo "  ps                     List the running Docker containers";
+
+all: create_secrets_files
+	docker compose -f $(COMPOSE_FILE) up -d --build
 
 stop:
 	docker compose -f $(COMPOSE_FILE) down -v
@@ -36,18 +38,11 @@ fclean: stop
 re: fclean all
 
 create_secrets_files:
-	mkdir -p ./secrets/
-	mkdir -p ./secrets/wordpress
-	mkdir -p ./secrets/mariadb
-	mkdir -p ./secrets/ftp
-	touch ./secrets/wordpress/wp_admin_mail.txt
-	touch ./secrets/wordpress/wp_admin_name.txt
-	touch ./secrets/wordpress/wp_admin_password.txt
-	touch ./secrets/wordpress/wp_user_mail.txt
-	touch ./secrets/wordpress/wp_user_name.txt
-	touch ./secrets/wordpress/wp_user_password.txt
-	touch ./secrets/mariadb/mariadb_wp_user_password.txt
-	touch ./secrets/ftp/ftp_password.txt
+	@chmod +x ./create_secrets.sh
+	@./create_secrets.sh
+
+remove_secrets:
+	@rm -rf $(SECRETS)
 
 logs:
 	docker compose -f $(COMPOSE_FILE) logs -f
